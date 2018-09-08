@@ -21,6 +21,14 @@ The Java SE 8 or higher is recommended to build the project.
 
 ## Basic Usage
 
+> application.yml
+```yaml
+spring:
+  nats:
+    urls:
+      - nats://127.0.0.1:4222
+```
+
 ```java
 @EnableNats
 @SpringBootApplication
