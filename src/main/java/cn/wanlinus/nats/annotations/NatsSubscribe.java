@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 public @interface NatsSubscribe {
 
     /**
-     * @return @see {@link #subscribe()}
+     * @return {@link #subscribe()}
      */
     @AliasFor("subscribe")
     String value() default "";

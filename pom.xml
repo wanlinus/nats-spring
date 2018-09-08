@@ -5,11 +5,11 @@
 
     <groupId>cn.wanlinus</groupId>
     <artifactId>nats-spring</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>nats-spring</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Nats MQ for Spring Boot</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

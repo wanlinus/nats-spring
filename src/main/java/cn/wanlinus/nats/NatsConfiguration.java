@@ -3,11 +3,8 @@ package cn.wanlinus.nats;
 import io.nats.client.Connection;
 import io.nats.client.Nats;
 import io.nats.client.Options;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
@@ -22,16 +19,16 @@ import java.io.IOException;
  */
 @Configuration
 @EnableConfigurationProperties(NatsProperties.class)
-public class NatsConfiguration implements ApplicationContextAware {
+public class NatsConfiguration {
 
-
-    private ApplicationContext applicationContext;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
+    /**
+     * Nats Connection config {@link Options}
+     *
+     * @param properties {@link NatsProperties}
+     * @return Nats Connection {@link Connection}
+     * @throws IOException          Get Nats Connection throws
+     * @throws InterruptedException Get Nats Connection throws
+     */
     @Bean
     public Connection connection(NatsProperties properties) throws IOException, InterruptedException {
         Options.Builder builder = new Options.Builder();

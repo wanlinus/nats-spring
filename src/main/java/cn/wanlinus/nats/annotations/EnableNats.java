@@ -9,6 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Enable Nats Support {@link NatsSubscribe}
+ *
  * @author wanli
  * @date 2018-09-08
  */

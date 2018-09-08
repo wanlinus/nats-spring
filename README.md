@@ -22,8 +22,8 @@ The Java SE 8 or higher is recommended to build the project.
 ## Basic Usage
 
 ```java
-@SpringBootApplication
 @EnableNats
+@SpringBootApplication
 public class NatsDemo2Application {
 
     public static void main(String[] args) {
