@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 
 import java.io.IOException;
+import java.time.Duration;
 
 /**
  * Nats配置类
@@ -37,59 +38,18 @@ import java.io.IOException;
 @EnableConfigurationProperties(NatsProperties.class)
 public class NatsConfiguration {
 
-    /**
-     * Nats Connection config {@link Options}
-     *
-     * @param properties {@link NatsProperties}
-     * @return Nats Connection {@link Connection}
-     * @throws IOException          Get Nats Connection throws
-     * @throws InterruptedException Get Nats Connection throws
-     */
     @Bean
-    public Connection connection(NatsProperties properties) throws IOException, InterruptedException {
-        Options.Builder builder = new Options.Builder();
-        for (String str : properties.getUrls()) {
-            builder = builder.server(str);
-        }
-        builder = builder.connectionName(properties.getConnectionName())
-                .sslContext(properties.getSslContext())
-                .reconnectWait(properties.getReconnectWait())
-                .connectionTimeout(properties.getReconnectWait())
-                .pingInterval(properties.getPingInterval())
-                .requestCleanupInterval(properties.getRequestCleanupInterval())
-                .maxPingsOut(properties.getMaxPingsOut())
-                .reconnectBufferSize(properties.getReconnectBufferSize())
-                .userInfo(properties.getUsername(), properties.getPassword())
+    public Connection natsConnection(NatsProperties properties) throws IOException, InterruptedException {
+        Options.Builder builder = new io.nats.client.Options.Builder()
+                .servers(properties.getNatsUrls())
                 .token(properties.getToken())
-                .bufferSize(properties.getBufferSize());
-
-        if (!properties.isNoRandomize()) {
-            builder = builder.noRandomize();
-        }
-        if (!properties.isVerbose()) {
-            builder = builder.verbose();
-        }
-        if (!properties.isPedantic()) {
-            builder = builder.pedantic();
-        }
-        if (!properties.isUseOldRequestStyle()) {
-            builder = builder.oldRequestStyle();
-        }
-        if (!properties.isTrackAdvancedStats()) {
-            builder = builder.turnOnAdvancedStats();
-        }
-        if (!properties.isNoEcho()) {
-            builder = builder.noEcho();
-        }
+                .connectionListener(new NatsListener())
+                .maxReconnects(properties.getMaxReconnect())
+                .reconnectWait(Duration.ofSeconds(properties.getReconnectWait()))
+                .connectionTimeout(Duration.ofSeconds(properties.getConnectionTimeout()));
         return Nats.connect(builder.build());
     }
 
-    /**
-     * 在SpringBoot启动时装配，并设置订阅类
-     *
-     * @param connection Nats链接
-     * @return {@link NatsConfigBeanPostProcessor}
-     */
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public NatsConfigBeanPostProcessor configBeanPostProcessor(Connection connection) {

@@ -19,171 +19,33 @@ package cn.wanlinus.nats;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import javax.net.ssl.SSLContext;
-import java.time.Duration;
-
-import static io.nats.client.Options.*;
-
 /**
- * Nats 配置类，在Spring boot启动的时候自动装配此类
- * 其配置主要参考 {@link io.nats.client.Options}
- *
  * @author wanli
- * @date 2018-08-30
+ * @date 2018-11-20 11:38
  */
 @ConfigurationProperties(prefix = "spring.nats")
 public class NatsProperties {
-    private String[] urls = {"nats://127.0.0.1:4222"};
-    private boolean noRandomize = false;
-    /**
-     * Useful for debugging -> "test: " + NatsTestServer.currentPort();
-     */
-    private String connectionName = null;
-    private boolean verbose = false;
-    private boolean pedantic = false;
-    private SSLContext sslContext = null;
-    private int maxControlLine = DEFAULT_MAX_CONTROL_LINE;
-    private int maxReconnect = DEFAULT_MAX_RECONNECT;
-    private Duration reconnectWait = DEFAULT_RECONNECT_WAIT;
-    private Duration connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-    private Duration pingInterval = DEFAULT_PING_INTERVAL;
-    private Duration requestCleanupInterval = DEFAULT_REQUEST_CLEANUP_INTERVAL;
-    private int maxPingsOut = DEFAULT_MAX_PINGS_OUT;
-    private long reconnectBufferSize = DEFAULT_RECONNECT_BUF_SIZE;
-    private String username = null;
-    private String password = null;
+    private String[] natsUrls = {"nats://127.0.0.1:4200"};
     private String token = null;
-    private boolean useOldRequestStyle = false;
-    private int bufferSize = DEFAULT_BUFFER_SIZE;
-    private boolean trackAdvancedStats = false;
-    private boolean noEcho = false;
+    /**
+     * Default maximum number of reconnect attempts
+     */
+    private int maxReconnect = 60;
+    /**
+     * Default wait time before attempting reconnection to the same server
+     */
+    private int reconnectWait = 2;
+    /**
+     * Default connection timeout
+     */
+    private int connectionTimeout = 2;
 
-    public String[] getUrls() {
-        return urls;
+    public String[] getNatsUrls() {
+        return natsUrls;
     }
 
-    public void setUrls(String[] urls) {
-        this.urls = urls;
-    }
-
-    public boolean isNoRandomize() {
-        return noRandomize;
-    }
-
-    public void setNoRandomize(boolean noRandomize) {
-        this.noRandomize = noRandomize;
-    }
-
-    public String getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(String connectionName) {
-        this.connectionName = connectionName;
-    }
-
-    public boolean isVerbose() {
-        return verbose;
-    }
-
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
-    public boolean isPedantic() {
-        return pedantic;
-    }
-
-    public void setPedantic(boolean pedantic) {
-        this.pedantic = pedantic;
-    }
-
-    public SSLContext getSslContext() {
-        return sslContext;
-    }
-
-    public void setSslContext(SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-
-    public int getMaxControlLine() {
-        return maxControlLine;
-    }
-
-    public void setMaxControlLine(int maxControlLine) {
-        this.maxControlLine = maxControlLine;
-    }
-
-    public int getMaxReconnect() {
-        return maxReconnect;
-    }
-
-    public void setMaxReconnect(int maxReconnect) {
-        this.maxReconnect = maxReconnect;
-    }
-
-    public Duration getReconnectWait() {
-        return reconnectWait;
-    }
-
-    public void setReconnectWait(Duration reconnectWait) {
-        this.reconnectWait = reconnectWait;
-    }
-
-    public Duration getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-    public void setConnectionTimeout(Duration connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
-    }
-
-    public Duration getPingInterval() {
-        return pingInterval;
-    }
-
-    public void setPingInterval(Duration pingInterval) {
-        this.pingInterval = pingInterval;
-    }
-
-    public Duration getRequestCleanupInterval() {
-        return requestCleanupInterval;
-    }
-
-    public void setRequestCleanupInterval(Duration requestCleanupInterval) {
-        this.requestCleanupInterval = requestCleanupInterval;
-    }
-
-    public int getMaxPingsOut() {
-        return maxPingsOut;
-    }
-
-    public void setMaxPingsOut(int maxPingsOut) {
-        this.maxPingsOut = maxPingsOut;
-    }
-
-    public long getReconnectBufferSize() {
-        return reconnectBufferSize;
-    }
-
-    public void setReconnectBufferSize(long reconnectBufferSize) {
-        this.reconnectBufferSize = reconnectBufferSize;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setNatsUrls(String[] natsUrls) {
+        this.natsUrls = natsUrls;
     }
 
     public String getToken() {
@@ -194,35 +56,27 @@ public class NatsProperties {
         this.token = token;
     }
 
-    public boolean isUseOldRequestStyle() {
-        return useOldRequestStyle;
+    public int getMaxReconnect() {
+        return maxReconnect;
     }
 
-    public void setUseOldRequestStyle(boolean useOldRequestStyle) {
-        this.useOldRequestStyle = useOldRequestStyle;
+    public void setMaxReconnect(int maxReconnect) {
+        this.maxReconnect = maxReconnect;
     }
 
-    public int getBufferSize() {
-        return bufferSize;
+    public int getReconnectWait() {
+        return reconnectWait;
     }
 
-    public void setBufferSize(int bufferSize) {
-        this.bufferSize = bufferSize;
+    public void setReconnectWait(int reconnectWait) {
+        this.reconnectWait = reconnectWait;
     }
 
-    public boolean isTrackAdvancedStats() {
-        return trackAdvancedStats;
+    public int getConnectionTimeout() {
+        return connectionTimeout;
     }
 
-    public void setTrackAdvancedStats(boolean trackAdvancedStats) {
-        this.trackAdvancedStats = trackAdvancedStats;
-    }
-
-    public boolean isNoEcho() {
-        return noEcho;
-    }
-
-    public void setNoEcho(boolean noEcho) {
-        this.noEcho = noEcho;
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 }

@@ -16,25 +16,29 @@
 
 package cn.wanlinus.nats;
 
-import cn.wanlinus.nats.annotations.NatsSubscribe;
+import cn.wanlinus.nats.annotations.Subscribe;
 import cn.wanlinus.nats.exception.NatsException;
 import io.nats.client.Connection;
 import io.nats.client.Dispatcher;
 import io.nats.client.Message;
-import org.springframework.beans.BeansException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
- * Nats Bean处理类 主要是注册{@link NatsSubscribe}
+ * Nats Bean处理类 主要是注册{@link Subscribe}
  *
  * @author wanli
  * @date 2018-09-08
  */
 public class NatsConfigBeanPostProcessor implements BeanPostProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NatsConfigBeanPostProcessor.class);
 
     private Connection connection;
 
@@ -43,17 +47,12 @@ public class NatsConfigBeanPostProcessor implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
 
         final Class<?> clazz = bean.getClass();
-        for (final Method method : clazz.getMethods()) {
-            final NatsSubscribe subscribe = AnnotationUtils.findAnnotation(method, NatsSubscribe.class);
-            if (subscribe != null) {
+        Arrays.stream(clazz.getMethods()).forEach(method -> {
+            Optional<Subscribe> subOpt = Optional.ofNullable(AnnotationUtils.findAnnotation(method, Subscribe.class));
+            subOpt.ifPresent(sub -> {
                 final Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {
                     throw new NatsException(String.format(
@@ -61,19 +60,19 @@ public class NatsConfigBeanPostProcessor implements BeanPostProcessor {
                             method.toGenericString(),
                             beanName,
                             Message.class.getName(),
-                            NatsSubscribe.class.getName()
+                            Subscribe.class.getName()
                     ));
                 }
                 Dispatcher dispatcher = connection.createDispatcher(message -> {
                     try {
                         method.invoke(bean, message);
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
+                        LOGGER.error(String.format("Error for method invoke: %s", method.getName()));
                     }
                 });
-                dispatcher.subscribe(subscribe.value());
-            }
-        }
+                dispatcher.subscribe(sub.value());
+            });
+        });
         return bean;
     }
 }
